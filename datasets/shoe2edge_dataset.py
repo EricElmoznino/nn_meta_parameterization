@@ -3,11 +3,12 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms import functional as tr_func
 from PIL import Image
 import pytorch_lightning as pl
+from argparse import ArgumentParser
 
 
 class Shoe2EdgeDataModule(pl.LightningDataModule):
 
-    def __init__(self, data_dir: str, batch_size: int = 32):
+    def __init__(self, data_dir: str, batch_size: int = 32, **kwargs):
         super().__init__()
         self.data_dir = data_dir
         self.batch_size = batch_size
@@ -21,6 +22,13 @@ class Shoe2EdgeDataModule(pl.LightningDataModule):
 
     def val_dataloader(self):
         return DataLoader(self.val_dataset, batch_size=self.batch_size, num_workers=4)
+
+    @staticmethod
+    def add_data_specific_args(parent_parser):
+        parser = ArgumentParser(parents=[parent_parser], add_help=False)
+        parser.add_argument('--data_dir', type=str, required=True)
+        parser.add_argument('--batch_size', type=int, default=32)
+        return parser
 
 
 class Shoe2EdgeDataset(Dataset):

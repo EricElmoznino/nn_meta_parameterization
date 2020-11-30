@@ -24,9 +24,10 @@ def main(args):
 
     gpus = 1 if torch.cuda.is_available() else 0
 
+    dictargs = vars(args)
     model = dispatch_model(args.model)
-    data = Shoe2EdgeDataModule(data_dir=args.data_dir)
-    task = ImageTransformTask(model, **vars(args))
+    data = Shoe2EdgeDataModule(**dictargs)
+    task = ImageTransformTask(model, **dictargs)
 
     trainer = Trainer.from_argparse_args(args, default_root_dir=save_dir, gpus=gpus,  overfit_batches=overfit_batches,
                                          callbacks=[ModelCheckpoint(monitor='Validation/loss'),
@@ -45,11 +46,10 @@ def dispatch_model(model_name):
 
 
 parser = ArgumentParser()
-parser.add_argument('--data_dir', type=str, required=True)
 parser.add_argument('--run_name', type=str, default=None)
 parser.add_argument('--model', type=str, default='meta')
 parser.add_argument('--debug', action='store_true')
-parser.add_argument('--batch_size', type=int, default=32)
+parser = Shoe2EdgeDataModule.add_data_specific_args(parser)
 parser = ImageTransformTask.add_model_specific_args(parser)
 parser = Trainer.add_argparse_args(parser)
 args = parser.parse_args()

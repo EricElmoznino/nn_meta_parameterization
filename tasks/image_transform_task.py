@@ -1,15 +1,13 @@
 from typing import Union, Callable
 import torch
 from torch import nn
-import torch.nn.functional as F
 import pytorch_lightning as pl
 from argparse import ArgumentParser
 
 
 class ImageTransformTask(pl.LightningModule):
 
-    def __init__(self, transformer: nn.Module, lr: float = 1e-3, loss_func: Union[str, nn.Module, Callable] = 'MAE',
-                 **kwargs):
+    def __init__(self, transformer: nn.Module, lr: float = 1e-3, loss_func: Union[str, nn.Module, Callable] = 'MAE', **kwargs):
         super().__init__()
         self.transformer = transformer
         self.lr = lr
