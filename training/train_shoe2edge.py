@@ -30,7 +30,7 @@ def main(args):
 
     trainer = Trainer.from_argparse_args(args, default_root_dir=save_dir, gpus=gpus,  overfit_batches=overfit_batches,
                                          callbacks=[ModelCheckpoint(monitor='Validation/loss'),
-                                                    EarlyStopping(monitor='Validation/loss'),
+                                                    EarlyStopping(monitor='Validation/loss', patience=10),
                                                     TensorBoardImageCallback(n_cols=2)])
     trainer.fit(task, datamodule=data)
 
