@@ -13,14 +13,36 @@ class TensorBoardImageCallback(Callback):
         self.val_only = val_only
         self.every_n_epochs = every_n_epochs
 
+        self.train_saved = True
+        self.val_saved = True
+        self.test_saved = True
+
+    def on_train_epoch_start(self, trainer, pl_module):
+        if (trainer.current_epoch - 1) % self.every_n_epochs == 0:
+            self.train_saved = False
+
+    def on_validation_epoch_start(self, trainer, pl_module):
+        if trainer.current_epoch % self.every_n_epochs == 0:
+            self.val_saved = False
+
+    def on_test_epoch_start(self, trainer, pl_module):
+        if trainer.current_epoch % self.every_n_epochs == 0:
+            self.test_saved = False
+
     def on_train_batch_start(self, trainer, pl_module, batch, batch_idx, dataloader_idx):
-        if trainer.batch_idx == 0 and trainer.current_epoch > 0 and \
-                (trainer.current_epoch - 1) % self.every_n_epochs == 0 and not self.val_only:
+        if not self.train_saved:
             self.log_images(pl_module, batch, label='Training', epoch=trainer.current_epoch - 1)
+            self.train_saved = True
 
     def on_validation_batch_start(self, trainer, pl_module, batch, batch_idx, dataloader_idx):
-        if trainer.batch_idx == 0 and trainer.current_epoch % self.every_n_epochs == 0:
+        if not self.val_saved:
             self.log_images(pl_module, batch, label='Validation', epoch=trainer.current_epoch)
+            self.val_saved = True
+
+    def on_test_batch_start(self, trainer, pl_module, batch, batch_idx, dataloader_idx):
+        if not self.test_saved:
+            self.log_images(pl_module, batch, label='Test', epoch=trainer.current_epoch)
+            self.test_saved = True
 
     def log_images(self, pl_module, batch, label, epoch):
         label = '' if label is None else label + '/'
