@@ -34,7 +34,7 @@ class TensorBoardImageCallback(Callback):
             pl_module.logger.experiment.add_image(label + 'ground_truth', y, epoch)
 
     def image_samples(self, pl_module, x, y):
-        x = x[:self.n_imgs]
+        x = x[:self.n_imgs].to(pl_module.device)
         with torch.no_grad():
             yhat = pl_module(x)
 
