@@ -42,8 +42,7 @@ class ImageTransformTask(pl.LightningModule):
         loss = self.loss_func(pred, y)
 
         self.log('Validation/loss', loss)
-
-        return loss
+        self.log('val_loss', loss, prog_bar=True, logger=False)
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.transformer.parameters(), lr=self.lr)

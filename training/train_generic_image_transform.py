@@ -5,7 +5,7 @@ import torch
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from tasks import ImageTransformTask
-from datasets import Shoe2EdgeDataModule
+from datasets import ImageTransformDataModule
 from tasks.custom_callbacks import TensorBoardImageCallback
 from models.baselines import ShallowCNN
 from models.meta_cnns import OneLayerResNetMeta
@@ -26,7 +26,7 @@ def main(args):
 
     dictargs = vars(args)
     model = dispatch_model(args.model)
-    data = Shoe2EdgeDataModule(**dictargs)
+    data = ImageTransformDataModule(**dictargs)
     task = ImageTransformTask(model, **dictargs)
 
     trainer = Trainer.from_argparse_args(args, default_root_dir=save_dir, gpus=gpus,  overfit_batches=overfit_batches,
@@ -38,9 +38,9 @@ def main(args):
 
 def dispatch_model(model_name):
     if model_name == 'baseline':
-        return ShallowCNN(in_channels=3, out_channels=1)
+        return ShallowCNN(in_channels=3, out_channels=3)
     elif model_name == 'meta':
-        return OneLayerResNetMeta(in_channels=3, out_channels=1)
+        return OneLayerResNetMeta(in_channels=3, out_channels=3)
     else:
         raise ValueError(f'Unknown model: {model_name}')
 
@@ -49,7 +49,7 @@ parser = ArgumentParser()
 parser.add_argument('--run_name', type=str, default=None)
 parser.add_argument('--model', type=str, default='meta')
 parser.add_argument('--debug', action='store_true')
-parser = Shoe2EdgeDataModule.add_data_specific_args(parser)
+parser = ImageTransformDataModule.add_data_specific_args(parser)
 parser = ImageTransformTask.add_model_specific_args(parser)
 parser = Trainer.add_argparse_args(parser)
 args = parser.parse_args()

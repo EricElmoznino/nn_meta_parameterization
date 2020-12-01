@@ -1,1 +1,2 @@
+from .image_transform_dataset import ImageTransformDataModule
 from .shoe2edge_dataset import Shoe2EdgeDataModule
