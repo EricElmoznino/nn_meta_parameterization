@@ -22,8 +22,8 @@ class ImageTransformDataModule(pl.LightningDataModule):
     def train_dataloader(self):
         return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=4)
 
-    def val_dataloader(self):
-        return DataLoader(self.val_dataset, batch_size=self.batch_size, num_workers=4)
+    def val_dataloader(self, shuffle=False):
+        return DataLoader(self.val_dataset, batch_size=self.batch_size, shuffle=shuffle, num_workers=4)
 
     @staticmethod
     def add_data_specific_args(parent_parser):
