@@ -22,7 +22,7 @@ class TensorBoardImageCallback(Callback):
             self.train_saved = False
 
     def on_validation_epoch_start(self, trainer, pl_module):
-        if trainer.current_epoch % self.every_n_epochs == 0:
+        if trainer.current_epoch % self.every_n_epochs == 0 and not trainer.running_sanity_check:
             self.val_saved = False
 
     def on_test_epoch_start(self, trainer, pl_module):
