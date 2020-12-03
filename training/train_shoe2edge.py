@@ -8,7 +8,7 @@ from tasks import ImageTransformTask
 from datasets import Shoe2EdgeDataModule
 from tasks.custom_callbacks import TensorBoardImageCallback
 from models.baselines import ShallowCNN
-from models.meta_cnns import OneLayerResNetMeta
+from models.meta_cnns import OneLayerPreResNetMeta
 
 
 def main(args):
@@ -40,7 +40,7 @@ def dispatch_model(model_name):
     if model_name == 'baseline':
         return ShallowCNN(in_channels=3, out_channels=1)
     elif model_name == 'meta':
-        return OneLayerResNetMeta(in_channels=3, out_channels=1)
+        return OneLayerPreResNetMeta(in_channels=3, out_channels=1)
     else:
         raise ValueError(f'Unknown model: {model_name}')
 

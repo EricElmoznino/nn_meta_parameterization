@@ -6,7 +6,7 @@ from torchvision.transforms.functional import to_pil_image, resize
 from PIL import Image
 from tasks import ImageTransformTask
 from datasets import ImageTransformDataModule
-from models.meta_cnns import OneLayerResNetMeta
+from models.meta_cnns import ShallowResNetMeta
 
 torch.set_grad_enabled(False)
 torch.manual_seed(27)
@@ -22,7 +22,7 @@ def main(args):
     n_imgs = 4
 
     task = ImageTransformTask.load_from_checkpoint(checkpoint_path,
-                                                   transformer=OneLayerResNetMeta(in_channels=3, out_channels=3))
+                                                   transformer=ShallowResNetMeta(in_channels=3, out_channels=3))
     data = ImageTransformDataModule(**vars(args))
     data.setup()
     task.freeze()
@@ -32,8 +32,8 @@ def main(args):
     dataloader = iter(data.val_dataloader(shuffle=True))
     x, y = next(dataloader)
     x, y = x.to(device)[:n_imgs], y.to(device)[:n_imgs]
-    weight, bias = parameterizing_cnn(x)
-    yhat = parameterized_cnn(x, weight, bias)
+    weights, biases = parameterizing_cnn(x)
+    yhat = parameterized_cnn(x, weights, biases)
 
     images = []
     for i in range(len(x)):
@@ -41,8 +41,8 @@ def main(args):
         images.append(yhat[i])
 
         xi = x[i].unsqueeze(dim=0).repeat(len(x) - 1, 1, 1, 1)
-        wrong_weight = weight[[j for j in range(len(x)) if j != i]]
-        wrong_bias = bias[[j for j in range(len(x)) if j != i]]
+        wrong_weight = [w[[j for j in range(len(x)) if j != i]] for w in weights]
+        wrong_bias = [b[[j for j in range(len(x)) if j != i]] for b in biases]
         wrong_yhat = parameterized_cnn(xi, wrong_weight, wrong_bias)
         for j in range(len(wrong_yhat)):
             images.append(wrong_yhat[j])

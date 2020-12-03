@@ -3,7 +3,23 @@ from torch.nn import functional as F
 from .custom_layers import batchconv2d
 
 
-class OneLayerParameterized(nn.Module):
+class ConvParameterized(nn.Module):
+
+    def forward(self, x, weights, biases):
+        for i, (w, b) in enumerate(zip(weights, biases)):
+            if weights.size(3) > 1 or weights.size(4) > 1:
+                x = F.pad(x, pad=[w.size(4) // 2, w.size(4) // 2,
+                                  w.size(3) // 2, w.size(3) // 2], mode='replicate')
+
+            x = batchconv2d(x, w, b)
+
+            if i < len(weights) - 1:
+                x = F.relu(x, inplace=True)
+
+        return x
+
+
+class OneLayerPreParameterized(nn.Module):
 
     def __init__(self, in_channels=3, out_channels=None, hidden_channels=32):
         super().__init__()
