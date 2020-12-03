@@ -27,7 +27,7 @@ class ResNetParameterizer(nn.Module):
         params = x.split(self.param_sizes, dim=1)
         params = [p.split([ws, bs], dim=1) for p, ws, bs in zip(params, self.weight_sizes, self.bias_sizes)]
         weights, biases = zip(*params)
-        weights = tuple(w.view(w.size(0), *wshape) for w, wshape in zip(weights, self.weight_sizes))
+        weights = tuple(w.view(w.size(0), *wshape) for w, wshape in zip(weights, self.weight_shapes))
 
         return weights, biases
 

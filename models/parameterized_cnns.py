@@ -7,7 +7,7 @@ class ConvParameterized(nn.Module):
 
     def forward(self, x, weights, biases):
         for i, (w, b) in enumerate(zip(weights, biases)):
-            if weights.size(3) > 1 or weights.size(4) > 1:
+            if w.size(3) > 1 or w.size(4) > 1:
                 x = F.pad(x, pad=[w.size(4) // 2, w.size(4) // 2,
                                   w.size(3) // 2, w.size(3) // 2], mode='replicate')
 
